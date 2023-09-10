@@ -1,0 +1,242 @@
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        self.parent = None
+
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+    
+
+    #ADDING A NEW VALUE
+    def insert(self, value):
+        if self.root == None:
+            self.root = Node(value) #is an object from  Node class
+            #self.root is a node with value, left and right
+        else:
+            self._insert(value, self.root)
+            
+    def _insert(self, value, currentNode):
+        if value < currentNode.value:
+            if currentNode.left is None:
+                currentNode.left = Node(value)
+                currentNode.left.parent = currentNode
+            else:
+                self._insert(value, currentNode.left)
+        elif value > currentNode.value:
+            if currentNode.right is None:
+                currentNode.right = Node(value)
+                currentNode.right.parent = currentNode
+            else:
+                self._insert(value, currentNode.right)
+        else:
+            pass
+
+
+    #PRINTING THE TREE IN ORDER
+    def printTree(self):
+        if self.root != None:
+            self._printTree(self.root)
+
+    def _printTree(self, currentNode):
+        if currentNode != None:
+            self._printTree(currentNode.left)
+            print(str(currentNode.value))
+            self._printTree(currentNode.right)
+
+
+    #CALCULATING THE HEIGHT OF THE TREE
+    def height(self):
+        if self.root!=None:
+            return self._height(root)
+        else:
+            return -1
+
+    def _height(self,node):
+        if node.left == None and node.right == None:
+            return 0
+        else:
+            return 1 + max(self._height(node.left) , self._height(node.right))
+
+    #DETERMINING WHETHER OR NOT A VALUE EXISTS THE TREE 
+    def exist(self,value):
+        if self.root != None:
+            return self._exist(value, self.root)
+        else:
+            return False
+
+    def _exist(self, value, currentNode):
+        if value == currentNode.value:
+            return True
+        elif value < currentNode.value and currentNode.left != None:
+            return self._exist(value, currentNode.left)
+        elif value > currentNode.value and currentNode.right != None:
+            return self._exist(value, currentNode.right)
+        else:
+            return False
+
+
+    #RETURNS THE NODE OF THE TARGET VALUE
+    def find(self, value):
+        if self.root != None:
+            return self._find(value, self.root)
+        else: 
+            return None
+
+    def _find(self, value, currentNode):
+        if value == currentNode.value:
+            return currentNode
+        elif value < currentNode.value and currentNode.left != None:
+            return self._find(value, currentNode.left)
+        elif value > currentNode.right and currentNode.right != None:
+            return self._find(value, currentNode.right)
+        else:
+            return False
+
+
+
+    #DELETES A VALUE FROM THE TREE
+    def deleteValue(self, value):
+        return self.deleteNode(self.find(value))
+
+    def deleteNode(self, node):
+        if self.root != None:
+            return self._deleteValue(node.value, self.root)
+        else:
+            return False
+
+    def _deleteValue(self, value, currentNode):
+
+        #CHECKING IF THE VALUE EXISTS IN THE TREE
+        if self._exist(value, currentNode):
+            if value < currentNode.value and currentNode.left != None:
+                currentNode.left = self._deleteValue(value, currentNode.left)
+            elif value > currentNode.value and currentNode.right != None:
+                currentNode.right = self._deleteValue(value, currentNode.right)
+            else:
+                #TARGET NODE IS A LEAF NODE
+                if currentNode.left == None and currentNode.right == None :
+                    currentNode = None
+
+                #TARGET NODE HAS ONLY ONE CHILD
+                elif currentNode.right == None:
+                    currentNode = currentNode.left #the node is replaced with another node that brings along its banches
+                
+                elif currentNode.left == None:
+                    currentNode = currentNode.right #the node is replaced with another node that brings along its banches
+
+                #TARGET NODE HAS TWO CHILDREN    
+                else:
+                    substitute = self.minimumSub(currentNode.right) #minimum value on the right branch of the target node
+                    currentNode.value = substitute.value
+                    currentNode.right = self._deleteValue(substitute.value, currentNode.right)
+        
+        return currentNode
+
+
+    #TRAVERSING THE TREE
+    def traversePreOrder(self):
+        if self.root == None:
+            return False
+        else:
+            self._traversePreOrder(self.root)
+
+    def _traversePreOrder(self, node):
+        if node == None:
+            return
+        else:
+            print(node.value)
+            self._traversePreOrder(node.left)
+            self._traversePreOrder(node.right)
+
+
+
+    def traverseInOrder(self):
+        if self.root == None:
+            return False
+        else:
+            self._traverseInOrder(self.root)
+
+    def _traverseInOrder(self, node):
+        if node == None:
+            return
+        else:
+            self._traverseInOrder(node.left)
+            print(node.value)
+            self._traverseInOrder(node.right)
+
+    
+    def traversePostOrder(self):
+        if self.root == None:
+            return False
+        else:
+            self._traversePostOrder(self.root)
+
+    def _traversePostOrder(self, node):
+        if node == None:
+            return
+        else:
+            self._traversePostOrder(node.left)
+            self._traversePostOrder(node.right)
+            print(node.value)
+
+
+    def minimumValue():
+        if self.root != None:
+            self._minimumValue(root)
+        else:
+            return False
+
+    def _minimumValue(self, node):
+        if node.left == None:
+            return node.value
+        return self._minimumValue(node.left)
+
+
+    def maximumValue():
+        if self.root != None:
+            self._maximumValue(root)
+        else:
+            return False
+
+    def _maximumValue(self, node):
+        if node.right == None:
+            return node.value
+        return self._minimumValue(node.right)
+
+    def minimumSub(self, node):
+        while node.left != None:
+            node = node.left
+        return node
+
+
+    def bstValidation():
+        if self.root != None:
+            self._bstValidation(self.root, float('-inf'), float('inf'))
+        else:
+            return False
+
+    def _bstValidation(self, node, minVal, maxVal):
+        if node == None :
+            return True
+        if node.value > maxVal or node.value < minVal:
+            return False
+        return self._bstValidation(node.left, minVal, node.value-1) and self._bstValidation(node.right, node.value+1, maxVal)
+
+
+                            
+
+
+
+def filling(tree, length = 6, max_int = 15):
+    from random import randint
+    list1= []
+    for i in range (length):
+        val = randint(0, max_int)
+        tree.add(val)
+        list1.append(val)
+    print(list1)
+    return tree
